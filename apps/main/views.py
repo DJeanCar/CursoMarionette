@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views.generic import TemplateView
 from rest_framework import viewsets
 from rest_framework.response import Response
 from .serializers import EventListSerializer, EventDetailSerializer
@@ -23,3 +24,8 @@ class EventViewSet(viewsets.ViewSet):
 		events = Event.objects.get(id = pk)
 		serializer = EventDetailSerializer(events, context={'request': request})
 		return Response(serializer.data)
+
+
+class IndexView(TemplateView):
+
+	template_name = 'index.html'
