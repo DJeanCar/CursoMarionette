@@ -25,3 +25,7 @@ class Inscription(models.Model):
 
 	def __unicode__(self):
 		return "%s %s" % (self.surname, self.event.name)
+
+class Favorito(models.Model):
+	event = models.ForeignKey(Event)
+	user = models.ForeignKey(User)

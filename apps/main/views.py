@@ -2,30 +2,33 @@ from django.shortcuts import render
 from django.views.generic import TemplateView
 from rest_framework import viewsets
 from rest_framework.response import Response
-from .serializers import EventListSerializer, EventDetailSerializer
-from .models import Event
+from .serializers import EventSerializer, InscritionSerializer, FavoritoSerializer
+from .models import Event, Inscription, Favorito
+from rest_framework.decorators import link, action
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
-class EventViewSet(viewsets.ViewSet):
+class EventViewSet(viewsets.ModelViewSet):
 
 	queryset = Event.objects.all()
+	serializer_class = EventSerializer
 
-	def list(self, request):
+	@link(permission_classes=[IsAuthenticated])
+	def inscritos(self, request, pk=None):
 		"""
-		Solo si es usuario muestra toda la lista
+		localhost:8000/api/cursos/08/capitulos_usuario/
 		"""
-		events = Event.objects.all()
-		serializer = EventListSerializer(events, many=True, context={'request': request})
-		return Response(serializer.data)
-		
-	def retrieve(self, request, pk):
-		"""
-		Muestra el detalle de un articulo
-		"""
-		events = Event.objects.get(id = pk)
-		serializer = EventDetailSerializer(events, context={'request': request})
-		return Response(serializer.data)
+		inscritos = Inscription.objects.filter(pk = pk)
+		inscritosSer = InscritionSerializer(inscritos, many=True, context={'request': request})
+		return Response(inscritosSer.data)
 
 
 class IndexView(TemplateView):
 
 	template_name = 'index.html'
+
+
+
+class FavoritoViewSet(viewsets.ModelViewSet):
+
+	queryset = Favorito.objects.all()
+	serializer_class = FavoritoSerializer

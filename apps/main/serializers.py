@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Event
+from .models import Event, Inscription, Favorito
 from django.contrib.auth.models import User
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -9,14 +9,27 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 		fields = ("username", "first_name", "last_name")
 
 
-class EventListSerializer(serializers.ModelSerializer):
+class EventSerializer(serializers.ModelSerializer):
+
+	favoritos = serializers.SerializerMethodField('get_favourites')
+
+	def get_favourites(self, event):
+		favoritos = Favorito.objects.filter(event = event).values("id")
+		return favoritos
 
 	class Meta:
 		model = Event
-		fields = ("id", "name", "address", "image")
+		fields = ("id", "name", "address", "description", "image", "organizer", "date", "category", 
+				"capacity", "user", "favoritos")
 
 
-class EventDetailSerializer(serializers.ModelSerializer):
+class InscritionSerializer(serializers.ModelSerializer):
 
 	class Meta:
-		model = Event
+		model = Inscription
+
+
+class FavoritoSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = Favorito
